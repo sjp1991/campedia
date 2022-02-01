@@ -1,0 +1,19 @@
+{
+  "name": "campedia",
+  "version": "1.0.0",
+  "description": "Web app for looking at Canadian campsites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sjp1991/campedia.git"
+  },
+  "author": "sjp1991",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/sjp1991/campedia/issues"
+  },
+  "homepage": "https://github.com/sjp1991/campedia#readme"
+}
