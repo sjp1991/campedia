@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/sjp1991/campedia/issues"
   },
-  "homepage": "https://github.com/sjp1991/campedia#readme"
+  "homepage": "https://github.com/sjp1991/campedia#readme",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "mongoose": "^6.1.9"
+  }
 }
