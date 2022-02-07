@@ -17,14 +17,19 @@ mongoose.connect('mongodb://localhost:27017/campedia', {
 const seedDB = async () => {
     await Campground.deleteMany({});
     for (let campground of jsonData) {
-        const camp = new Campground({
-            code: campground.code,
-            name: campground.name,
-            province: campground.prov,
-            lat: Number(campground.lat),
-            long: Number(campground.long)
-        })
-        await camp.save();
+        if (Math.random() > 0.9) { // to reduce number of seed data
+            const camp = new Campground({
+                code: campground.code,
+                name: campground.name,
+                province: campground.prov,
+                sites: Number(campground.sites),
+                phone: campground.phone,
+                amen: campground.amen
+                // lat: Number(campground.lat),
+                // long: Number(campground.long)
+            })
+            await camp.save();
+        }
     }
 }
 

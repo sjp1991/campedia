@@ -2,8 +2,32 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const Campground = require('./models/campground');
+const methodOverride = require('method-override');
 const app = express();
 const port = 3000;
+const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
+const amenitiesMap = {
+    NH: 'No RV Hookups',
+    E: 'Water Electric Sewer',
+    WE: 'Water Electric Sewer',
+    WES: 'Water Electric Sewer',
+    DP: 'Sanitary Dump',
+    ND: 'No Sanitary Dump',
+    FT: 'Flush Toilets',
+    VT: 'Vault Toilets',
+    FTVT: 'Some Flush Toilets',
+    PT: 'Pit Toilets',
+    NT: 'No Toilets',
+    DW: 'Drinking Water on Site',
+    NW: 'No Drinking Water on Site',
+    SH: 'Showers',
+    NS: 'No Showers',
+    RS: 'Accepts Reservations',
+    NR: 'No Reservations',
+    PA: 'Pets Allowed',
+    NP: 'No Pets Allowed',
+    L$: 'Free or Under $12'
+}
 
 mongoose.connect('mongodb://localhost:27017/campedia', {
     useNewUrlParser: true,
@@ -19,9 +43,50 @@ mongoose.connect('mongodb://localhost:27017/campedia', {
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
     res.render('home')
+})
+
+app.get('/campgrounds', async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render('campgrounds/index', { campgrounds });
+})
+
+app.post('/campgrounds', async (req, res) => {
+    const newCampground = new Campground(req.body.campground);
+    await newCampground.save();
+    res.redirect(`/campgrounds/${newCampground._id}`);
+})
+
+app.get('/campgrounds/new', async (req, res) => {
+    res.render('campgrounds/new', { provinces });
+})
+
+app.get('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    res.render('campgrounds/single', { campground });
+})
+
+app.put('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
+    res.redirect(`/campgrounds/${campground._id}`);
+})
+
+app.delete('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    await Campground.findByIdAndDelete(id);
+    res.redirect('/campgrounds');
+})
+
+app.get('/campgrounds/:id/edit', async (req, res) => {
+    const { id } = req.params;
+    const campground = await Campground.findById(id);
+    res.render('campgrounds/edit', { campground, provinces });
 })
 
 app.listen(port, () => {

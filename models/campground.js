@@ -5,8 +5,9 @@ const campgroundSchema = new Schema({
     code: String,
     name: String,
     province: String,
-    lat: Number,
-    long: Number
+    sites: Number,
+    phone: String,
+    amen: String
 });
 
 module.exports = mongoose.model('Campground', campgroundSchema);
