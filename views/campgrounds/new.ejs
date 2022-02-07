@@ -32,6 +32,14 @@
             <label for="phone">Phone Number</label>
             <input type="text" id="phone" name="campground[phone]">
         </div>
+        <div>
+            <label for="amen">Amenities</label>
+            <select id="amen" name="campground[amen]" multiple>
+                <% for(let amen of amenitiesMap){ %>
+                <option value="<%=amen[0]%>"><%=amen[1]%></option>
+                <% } %>
+            </select>
+        </div>
         <button>Submit</button>
     </form>
 </body>

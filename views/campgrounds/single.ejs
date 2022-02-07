@@ -17,7 +17,9 @@
     </ul>
     <h3>Amenities</h3>
     <ul>
-        <li><%= campground.amen %></li>
+        <% for (let amen of amenList) { %>
+        <li><%= amen %></li>
+        <% } %>
     </ul>
     <footer>
         <a href="/campgrounds">Go back</a> <br>
