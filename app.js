@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
+const morgan = require('morgan');
 const app = express();
 const port = 3000;
 const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
@@ -44,6 +45,7 @@ mongoose.connect('mongodb://localhost:27017/campedia', {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
 app.use(methodOverride('_method'));
 
 app.get('/', (req, res) => {
@@ -95,6 +97,14 @@ app.get('/campgrounds/:id/edit', async (req, res) => {
     res.render('campgrounds/edit', { campground, provinces, amenitiesMap, amenList });
 })
 
+app.get('/secret', verifySecretPhrase, (req, res) => {
+    res.send('This is a secret page. shhhhh')
+})
+
+app.use((req, res) => {
+    res.status(404).send('Sorry, page not found')
+})
+
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
@@ -118,4 +128,12 @@ function amenToString(amenList) {
         amenString = `${amenString} ${amen}`;
     }
     return amenString.trim();
+}
+
+function verifySecretPhrase(req, res, next) {
+    const { secretPhrase } = req.query;
+    if (secretPhrase === 'opensesame') {
+        next();
+    }
+    res.send('You need the secret phrase to enter');
 }
