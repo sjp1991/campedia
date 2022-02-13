@@ -1,33 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= campground.name %></title>
-</head>
-
-<body>
-    <h1><%= campground.name %></h1>
-    <ul>
-        <li>in <%= campground.province %></li>
-        <li>Number of campsites: <%= campground.sites %></li>
-        <li>Phone Number: <%= campground.phone %></li>
-    </ul>
-    <h3>Amenities</h3>
-    <ul>
-        <% for (let amen of amenList) { %>
-        <li><%= amen %></li>
-        <% } %>
-    </ul>
-    <footer>
-        <a href="/campgrounds">Go back</a> <br>
-        <a href="/campgrounds/<%= campground._id %>/edit">Edit this campground</a> <br>
-        <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-            <button>Delete</button>
-        </form>
-    </footer>
-</body>
-
-</html>
+<% layout('layouts/boilerplate') %>
+<h1><%= campground.name %></h1>
+<ul>
+    <li>in <%= campground.province %></li>
+    <li>Number of campsites: <%= campground.sites %></li>
+    <li>Phone Number: <%= campground.phone %></li>
+</ul>
+<h3>Amenities</h3>
+<ul>
+    <% for (let amen of amenList) { %>
+    <li><%= amen %></li>
+    <% } %>
+</ul>
+<footer>
+    <a href="/campgrounds">Go back</a> <br>
+    <a href="/campgrounds/<%= campground._id %>/edit">Edit this campground</a> <br>
+    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+        <button>Delete</button>
+    </form>
+</footer>

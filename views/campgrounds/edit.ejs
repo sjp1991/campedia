@@ -1,47 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Campground</title>
-</head>
-
-<body>
-    <h1>Edit a Campground</h1>
-    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
-        <div>
-            <label for="name">Name</label>
-            <input type="text" id="name" name="campground[name]" value="<%= campground.name %>">
-        </div>
-        <div>
-            <label for="province">Province</label>
-            <select id="province" name="campground[province]">
-                <% for(let province of provinces){ %>
-                <option value="<%=province%>" <%= province === campground.province ? 'selected' : '' %>><%=province%></option>
-                <% } %>
-            </select>
-        </div>
-        <div>
-            <label for="sites">Number of Sites</label>
-            <input type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
-        </div>
-        <div>
-            <label for="phone">Phone Number</label>
-            <input type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
-        </div>
-        <div>
-            <label for="amen">Amenities</label>
-            <select id="amen" name="campground[amen]" multiple>
-                <% for(let amen of amenitiesMap){ %>
-                <option value="<%=amen[0]%>" <%= amenList.includes(amen[0]) ? 'selected' : '' %>><%=amen[1]%></option>
-                <% } %>
-            </select>
-        </div>
-        <button>Submit</button>
-    </form>
-    <a href="/campgrounds/<%= campground._id %>">Cancel</a>
-</body>
-
-</html>
+<% layout('layouts/boilerplate') %>
+<h1>Edit a Campground</h1>
+<form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
+    <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="campground[name]" value="<%= campground.name %>">
+    </div>
+    <div>
+        <label for="province">Province</label>
+        <select id="province" name="campground[province]">
+            <% for(let province of provinces){ %>
+            <option value="<%=province%>" <%= province === campground.province ? 'selected' : '' %>><%=province%></option>
+            <% } %>
+        </select>
+    </div>
+    <div>
+        <label for="sites">Number of Sites</label>
+        <input type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
+    </div>
+    <div>
+        <label for="phone">Phone Number</label>
+        <input type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
+    </div>
+    <div>
+        <label for="amen">Amenities</label>
+        <select id="amen" name="campground[amen]" multiple>
+            <% for(let amen of amenitiesMap){ %>
+            <option value="<%=amen[0]%>" <%= amenList.includes(amen[0]) ? 'selected' : '' %>><%=amen[1]%></option>
+            <% } %>
+        </select>
+    </div>
+    <button>Submit</button>
+</form>
+<a href="/campgrounds/<%= campground._id %>">Cancel</a>
