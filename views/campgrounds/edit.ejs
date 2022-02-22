@@ -1,34 +1,38 @@
 <% layout('layouts/boilerplate') %>
-<h1>Edit a Campground</h1>
+<h1 class="text-center">Edit a Campground</h1>
 <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
-    <div>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="campground[name]" value="<%= campground.name %>">
+    <div class="mb-3">
+        <label class="form-label" for="name">Name</label>
+        <input class="form-control" type="text" id="name" name="campground[name]" value="<%= campground.name %>">
     </div>
-    <div>
-        <label for="province">Province</label>
-        <select id="province" name="campground[province]">
+    <div class="mb-3">
+        <label class="form-label" for="province">Province</label>
+        <select class="form-select" id="province" name="campground[province]">
             <% for(let province of provinces){ %>
             <option value="<%=province%>" <%= province === campground.province ? 'selected' : '' %>><%=province%></option>
             <% } %>
         </select>
     </div>
-    <div>
-        <label for="sites">Number of Sites</label>
-        <input type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
+    <div class="mb-3">
+        <label class="form-label" for="sites">Number of Sites</label>
+        <input class="form-control" type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
     </div>
-    <div>
-        <label for="phone">Phone Number</label>
-        <input type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
+    <div class="mb-3">
+        <label class="form-label" for="phone">Phone Number</label>
+        <input class="form-control" type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
     </div>
-    <div>
-        <label for="amen">Amenities</label>
-        <select id="amen" name="campground[amen]" multiple>
+    <div class="mb-3">
+        <label class="form-label" for="amen">Amenities</label>
+        <select class="form-select" id="amen" name="campground[amen]" multiple>
             <% for(let amen of amenitiesMap){ %>
             <option value="<%=amen[0]%>" <%= amenList.includes(amen[0]) ? 'selected' : '' %>><%=amen[1]%></option>
             <% } %>
         </select>
     </div>
-    <button>Submit</button>
+    <div class="mb-3">
+        <label class="form-label" for="desc">Description</label>
+        <input class="form-control" type="text" id="desc" name="campground[desc]" value="<%= campground.desc %>">
+    </div>
+    <button class="btn btn-primary">Submit</button>
+    <a class="btn btn-danger" href="/campgrounds/<%= campground._id %>">Cancel</a>
 </form>
-<a href="/campgrounds/<%= campground._id %>">Cancel</a>

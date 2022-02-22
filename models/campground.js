@@ -7,7 +7,8 @@ const campgroundSchema = new Schema({
     province: String,
     sites: Number,
     phone: String,
-    amen: String
+    amen: String,
+    desc: String
 });
 
 module.exports = mongoose.model('Campground', campgroundSchema);

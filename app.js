@@ -31,6 +31,7 @@ const amenitiesObj = {
     NP: 'No Pets Allowed',
     L$: 'Free or Under $12'
 }
+const imgUrl = 'https://source.unsplash.com/collection/483251';
 
 mongoose.connect('mongodb://localhost:27017/campedia', {
     useNewUrlParser: true,
@@ -57,7 +58,7 @@ app.get('/', (req, res) => {
 
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
+    res.render('campgrounds/index', { campgrounds, imgUrl });
 })
 
 app.post('/campgrounds', async (req, res) => {
@@ -76,7 +77,7 @@ app.get('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     const amenList = (campground.amen) ? parseAmenities(campground.amen) : [];
-    res.render('campgrounds/single', { campground, amenList });
+    res.render('campgrounds/single', { campground, amenList, imgUrl });
 })
 
 app.put('/campgrounds/:id', async (req, res) => {

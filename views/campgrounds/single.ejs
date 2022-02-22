@@ -1,20 +1,36 @@
 <% layout('layouts/boilerplate') %>
-<h1><%= campground.name %></h1>
-<ul>
-    <li>in <%= campground.province %></li>
-    <li>Number of campsites: <%= campground.sites %></li>
-    <li>Phone Number: <%= campground.phone %></li>
-</ul>
-<h3>Amenities</h3>
-<ul>
-    <% for (let amen of amenList) { %>
-    <li><%= amen %></li>
+<div class="card">
+    <div class="ratio ratio-16x9">
+        <img src="<%= imgUrl %>" class="card-img-top" alt="">
+    </div>
+    <div class="card-body">
+        <h3 class="card-title"><%= campground.name %></h3>
+        <div class="card-text"><small class="text-muted"><%= campground.province %></small></div>
+    </div>
+
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Number of campsites: <%= campground.sites %></li>
+        <li class="list-group-item">Phone Number: <%= campground.phone %></li>
+    </ul>
+    <div class="card-body">
+        <h5 class="card-text">Amenities</h5>
+    </div>
+    <ul class="list-group list-group-flush">
+        <% for (let amen of amenList) { %>
+        <li class="list-group-item"><%= amen %></li>
+        <% } %>
+    </ul>
+
+    <% if (campground.desc) { %>
+    <div class="card-body">
+        <p class="card-text"><%= campground.desc %></p>
+    </div>
     <% } %>
-</ul>
-<footer>
-    <a href="/campgrounds">Go back</a> <br>
-    <a href="/campgrounds/<%= campground._id %>/edit">Edit this campground</a> <br>
-    <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
-        <button>Delete</button>
-    </form>
-</footer>
+
+    <div class="card-body">
+        <a class="btn btn-info" href="/campgrounds/<%= campground._id %>/edit" class="card-link">Edit this campground</a>
+        <form class="d-inline" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</div>

@@ -24,7 +24,8 @@ const seedDB = async () => {
                 province: campground.prov,
                 sites: Number(campground.sites),
                 phone: campground.phone,
-                amen: campground.amen
+                amen: campground.amen,
+                desc: ''
                 // lat: Number(campground.lat),
                 // long: Number(campground.long)
             })
