@@ -61,6 +61,7 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds, imgUrl });
 })
 
+// Posting new campgroun
 app.post('/campgrounds', async (req, res) => {
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
@@ -68,11 +69,13 @@ app.post('/campgrounds', async (req, res) => {
     res.redirect(`/campgrounds/${newCampground._id}`);
 })
 
+// Page for creating new campground
 app.get('/campgrounds/new', async (req, res) => {
     const amenitiesMap = Object.entries(amenitiesObj);
     res.render('campgrounds/new', { provinces, amenitiesMap });
 })
 
+// Individual campsite page
 app.get('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -80,6 +83,7 @@ app.get('/campgrounds/:id', async (req, res) => {
     res.render('campgrounds/single', { campground, amenList, imgUrl });
 })
 
+// Individual campsite edit
 app.put('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     req.body.campground.amen = amenToString(req.body.campground.amen);
@@ -87,12 +91,14 @@ app.put('/campgrounds/:id', async (req, res) => {
     res.redirect(`/campgrounds/${campground._id}`);
 })
 
+// Individual campsite delete
 app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
 })
 
+// Page to edit a single campsite
 app.get('/campgrounds/:id/edit', async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -101,18 +107,40 @@ app.get('/campgrounds/:id/edit', async (req, res) => {
     res.render('campgrounds/edit', { campground, provinces, amenitiesMap, amenList });
 })
 
+// Easter egg
 app.get('/secret', verifySecretPhrase, (req, res) => {
     res.send('This is a secret page. shhhhh')
 })
 
+// 404 page handling
 app.use((req, res) => {
     res.status(404).send('Sorry, page not found')
+})
+
+// Error Handling
+app.use((err, req, res, next) => {
+    console.log('Error detected');
+    next(err);
 })
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
 
+/**
+ * Wrap async functions for error handling
+ * @param  {Function} fn The function to wrap around
+ * @return {Function}      new function with catch
+ */
+function wrapAsync(fn) {
+    return function (req, res, next).catch(e => next(e));
+}
+
+/**
+ * Parse string of coded amenities to readable strings
+ * @param  {String} amenString The coded string of amenities
+ * @return {Array}      Array of parsed amenities
+ */
 function parseAmenities(amenString) {
     if (!amenString) return [];
     amenList = amenString.split(" ");
@@ -125,6 +153,11 @@ function parseAmenities(amenString) {
     return parsedList;
 }
 
+/**
+ * Convert list of amenities to single coded string
+ * @param  {Array} amenList Array containing amenities
+ * @return {String}      Single string of coded amenities
+ */
 function amenToString(amenList) {
     if (!amenList) return "";
     amenString = "";
@@ -134,6 +167,9 @@ function amenToString(amenList) {
     return amenString.trim();
 }
 
+/**
+ * Verify easter egg secret phrase
+ */
 function verifySecretPhrase(req, res, next) {
     const { secretPhrase } = req.query;
     if (secretPhrase === 'opensesame') {
@@ -141,3 +177,4 @@ function verifySecretPhrase(req, res, next) {
     }
     res.send('You need the secret phrase to enter');
 }
+
