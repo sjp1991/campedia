@@ -5,6 +5,10 @@ const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
+const joi = require('joi');
+const asyncWrapper = require('./utils/AsyncWrapper');
+const ExpressError = require('./utils/ExpressError');
+const { campgroundJoiSchema } = require('./schemas.js');
 
 const app = express();
 const port = 3000;
@@ -32,6 +36,13 @@ const amenitiesObj = {
     L$: 'Free or Under $12'
 }
 const imgUrl = 'https://source.unsplash.com/collection/483251';
+// const campgroundJoiSchema = joi.object({
+//     campground: joi.object({
+//         name: joi.string().required(),
+//         province: joi.string().length(2).required(),
+//         sites: joi.number().min(1)
+//     }).required()
+// })
 
 mongoose.connect('mongodb://localhost:27017/campedia', {
     useNewUrlParser: true,
@@ -52,60 +63,70 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(methodOverride('_method'));
 
+const validateCampground = (req, res, next) => {
+    const { error } = campgroundJoiSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
 app.get('/', (req, res) => {
     res.render('home')
 })
 
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', asyncWrapper(async (req, res) => {
     const campgrounds = await Campground.find({});
     res.render('campgrounds/index', { campgrounds, imgUrl });
-})
+}))
 
-// Posting new campgroun
-app.post('/campgrounds', async (req, res) => {
+// Posting new campground
+app.post('/campgrounds', validateCampground, asyncWrapper(async (req, res) => {
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
     await newCampground.save();
     res.redirect(`/campgrounds/${newCampground._id}`);
-})
+}))
 
 // Page for creating new campground
-app.get('/campgrounds/new', async (req, res) => {
+app.get('/campgrounds/new', asyncWrapper(async (req, res) => {
     const amenitiesMap = Object.entries(amenitiesObj);
     res.render('campgrounds/new', { provinces, amenitiesMap });
-})
+}))
 
 // Individual campsite page
-app.get('/campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id', asyncWrapper(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     const amenList = (campground.amen) ? parseAmenities(campground.amen) : [];
     res.render('campgrounds/single', { campground, amenList, imgUrl });
-})
+}))
 
 // Individual campsite edit
-app.put('/campgrounds/:id', async (req, res) => {
+app.put('/campgrounds/:id', validateCampground, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
     res.redirect(`/campgrounds/${campground._id}`);
-})
+}))
 
 // Individual campsite delete
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id', asyncWrapper(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
-})
+}))
 
 // Page to edit a single campsite
-app.get('/campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit', asyncWrapper(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     const amenList = (campground.amen) ? campground.amen.split(" ") : [];
     const amenitiesMap = Object.entries(amenitiesObj);
     res.render('campgrounds/edit', { campground, provinces, amenitiesMap, amenList });
-})
+}))
 
 // Easter egg
 app.get('/secret', verifySecretPhrase, (req, res) => {
@@ -113,28 +134,20 @@ app.get('/secret', verifySecretPhrase, (req, res) => {
 })
 
 // 404 page handling
-app.use((req, res) => {
-    res.status(404).send('Sorry, page not found')
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page not found', 404));
 })
 
 // Error Handling
 app.use((err, req, res, next) => {
-    console.log('Error detected');
-    next(err);
+    if (!err.statusCode) err.statusCode = 500;
+    if (!err.message) err.message = "Error detected!"
+    res.render('error', { err });
 })
 
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
-
-/**
- * Wrap async functions for error handling
- * @param  {Function} fn The function to wrap around
- * @return {Function}      new function with catch
- */
-function wrapAsync(fn) {
-    return function (req, res, next).catch(e => next(e));
-}
 
 /**
  * Parse string of coded amenities to readable strings
@@ -177,4 +190,3 @@ function verifySecretPhrase(req, res, next) {
     }
     res.send('You need the secret phrase to enter');
 }
-
