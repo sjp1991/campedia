@@ -6,11 +6,20 @@ const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+
+// DB Model
+const User = require('./models/user');
+
+// Utils
 const asyncWrapper = require('./utils/AsyncWrapper');
 const ExpressError = require('./utils/ExpressError');
 
+// Routers
 const campgroundsRoutes = require('./routes/campgrounds');
 const reviewsRoutes = require('./routes/reviews');
+const userRoutes = require('./routes/users');
 
 const app = express();
 const port = 3000;
@@ -36,7 +45,7 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const sessionConfig = {
-    secret: 'sesmae',
+    secret: 'sesame',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -47,6 +56,11 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
@@ -54,8 +68,13 @@ app.use((req, res, next) => {
     next();
 })
 
+
+// Routers
 app.use('/campgrounds', campgroundsRoutes);
 app.use('/campgrounds/:id/reviews', reviewsRoutes);
+app.use('/', userRoutes);
+
+//---------------------------------------------------------------------------------------
 
 app.get('/', (req, res) => {
     res.redirect('/campgrounds');
