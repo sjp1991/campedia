@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const asyncWrapper = require('../utils/AsyncWrapper');
 const Campground = require('../models/campground');
+const asyncWrapper = require('../utils/AsyncWrapper');
 const ExpressError = require('../utils/ExpressError');
+const { isLoggedIn } = require('../utils/AuthMiddleware');
 const { campgroundJoiSchema } = require('../schemas.js');
 
 const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
@@ -47,7 +48,7 @@ router.get('/', asyncWrapper(async (req, res) => {
 }))
 
 // Posting new campground
-router.post('/', validateCampground, asyncWrapper(async (req, res) => {
+router.post('/', isLoggedIn, validateCampground, asyncWrapper(async (req, res) => {
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
     await newCampground.save();
@@ -56,7 +57,7 @@ router.post('/', validateCampground, asyncWrapper(async (req, res) => {
 }))
 
 // Page for creating new campground
-router.get('/new', asyncWrapper(async (req, res) => {
+router.get('/new', isLoggedIn, asyncWrapper(async (req, res) => {
     const amenitiesMap = Object.entries(amenitiesObj);
     res.render('campgrounds/new', { provinces, amenitiesMap });
 }))
@@ -74,7 +75,7 @@ router.get('/:id', asyncWrapper(async (req, res) => {
 }))
 
 // Individual campsite edit
-router.put('/:id', validateCampground, asyncWrapper(async (req, res) => {
+router.put('/:id', isLoggedIn, validateCampground, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
@@ -83,7 +84,7 @@ router.put('/:id', validateCampground, asyncWrapper(async (req, res) => {
 }))
 
 // Individual campsite delete
-router.delete('/:id', asyncWrapper(async (req, res) => {
+router.delete('/:id', isLoggedIn, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     req.flash('success', 'Successfully deleted a campground!');
@@ -91,7 +92,7 @@ router.delete('/:id', asyncWrapper(async (req, res) => {
 }))
 
 // Page to edit a single campsite
-router.get('/:id/edit', asyncWrapper(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     if (!campground) {
