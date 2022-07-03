@@ -10,6 +10,10 @@ const campgroundSchema = new Schema({
     phone: String,
     amen: String,
     desc: String,
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     reviews: [
         {
             type: Schema.Types.ObjectId,

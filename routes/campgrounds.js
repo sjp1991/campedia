@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Campground = require('../models/campground');
 const asyncWrapper = require('../utils/AsyncWrapper');
-const ExpressError = require('../utils/ExpressError');
-const { isLoggedIn } = require('../utils/AuthMiddleware');
-const { campgroundJoiSchema } = require('../schemas.js');
+const { isLoggedIn, isAuthorized } = require('../utils/AuthMiddleware');
+const { validateCampground } = require('../utils/ValidateMiddleware');
 
 const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
 const amenitiesObj = {
@@ -31,16 +30,6 @@ const amenitiesObj = {
 }
 const imgUrl = 'https://source.unsplash.com/collection/483251';
 
-const validateCampground = (req, res, next) => {
-    const { error } = campgroundJoiSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-}
-
 // General campground route
 router.get('/', asyncWrapper(async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -51,6 +40,7 @@ router.get('/', asyncWrapper(async (req, res) => {
 router.post('/', isLoggedIn, validateCampground, asyncWrapper(async (req, res) => {
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
+    newCampground.author = req.user._id;
     await newCampground.save();
     req.flash('success', 'Successfully registered a new campground!');
     res.redirect(`/campgrounds/${newCampground._id}`);
@@ -65,17 +55,20 @@ router.get('/new', isLoggedIn, asyncWrapper(async (req, res) => {
 // Individual campsite page
 router.get('/:id', asyncWrapper(async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findById(id).populate('reviews');
+    const campground = await (await Campground.findById(id)
+        .populate({ path: 'reviews', populate: { path: 'author' } }))
+        .populate('author');
     if (!campground) {
         req.flash('error', 'This campground no longer exists!');
         return res.redirect('/campgrounds');
     }
     const amenList = (campground.amen) ? parseAmenities(campground.amen) : [];
-    res.render('campgrounds/single', { campground, amenList, imgUrl });
+    const currentUser = req.user;
+    res.render('campgrounds/single', { campground, amenList, imgUrl, currentUser });
 }))
 
 // Individual campsite edit
-router.put('/:id', isLoggedIn, validateCampground, asyncWrapper(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthorized, validateCampground, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
@@ -92,7 +85,7 @@ router.delete('/:id', isLoggedIn, asyncWrapper(async (req, res) => {
 }))
 
 // Page to edit a single campsite
-router.get('/:id/edit', isLoggedIn, asyncWrapper(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isAuthorized, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     if (!campground) {

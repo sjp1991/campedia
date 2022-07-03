@@ -3,25 +3,15 @@ const router = express.Router({ mergeParams: true });
 const asyncWrapper = require('../utils/AsyncWrapper');
 const Campground = require('../models/campground');
 const Review = require('../models/review');
-const ExpressError = require('../utils/ExpressError');
-const { reviewJoiSchema } = require('../schemas.js');
-
-
-const validateReview = (req, res, next) => {
-    const { error } = reviewJoiSchema.validate(req.body);
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400);
-    } else {
-        next();
-    }
-}
+const { isLoggedIn, isReviewAuthorized } = require('../utils/AuthMiddleware');
+const { validateReview } = require('../utils/ValidateMiddleware');
 
 // Post a review for a single campsite
-router.post('/', validateReview, asyncWrapper(async (req, res) => {
+router.post('/', isLoggedIn, validateReview, asyncWrapper(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     campground.reviews.push(review);
     await review.save();
     await campground.save();
@@ -30,7 +20,7 @@ router.post('/', validateReview, asyncWrapper(async (req, res) => {
 }))
 
 // Delete a review for a single campsite
-router.delete('/:reviewId', asyncWrapper(async (req, res) => {
+router.delete('/:reviewId', isReviewAuthorized, asyncWrapper(async (req, res) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
     await Review.findByIdAndDelete(reviewId);

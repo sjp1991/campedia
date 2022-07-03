@@ -12,7 +12,7 @@ router.get('/register', (req, res) => {
 router.post('/register', asyncWrapper(async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
-        const newUser = new User({ username, email });
+        const newUser = new User({ username, email, isAdmin: false });
         const registeredUser = await User.register(newUser, password);
         req.login(registeredUser, err => {
             if (err) { return next(err) };
@@ -37,7 +37,12 @@ router.get('/login', (req, res) => {
 //     res.redirect(redirectUrl);
 // })
 
-router.post('/login', passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res, next) => {
+router.post('/login', passport.authenticate('local', {
+    failureFlash: true,
+    failureRedirect: '/login',
+    failureMessage: true,
+    keepSessionInfo: true
+}), (req, res, next) => {
     req.flash('success', 'welcome!');
     console.log(req.session);
     const redirectUrl = req.session.returnUrl ? req.session.returnUrl : '/campgrounds';
