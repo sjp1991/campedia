@@ -1,6 +1,7 @@
 const Campground = require('../models/campground');
+const { cloudinary } = require("../cloudinary");
 
-const imgUrl = 'https://source.unsplash.com/collection/483251';
+const imgUrl = 'https://source.unsplash.com/random/?camping';
 const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
 const amenitiesObj = {
     NH: 'No RV Hookups',
@@ -38,8 +39,10 @@ module.exports.renderNewCampground = async (req, res) => {
 module.exports.createNewCampground = async (req, res) => {
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
+    newCampground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     newCampground.author = req.user._id;
     await newCampground.save();
+    console.log(newCampground);
     req.flash('success', 'Successfully registered a new campground!');
     res.redirect(`/campgrounds/${newCampground._id}`);
 }
@@ -74,6 +77,15 @@ module.exports.editCampground = async (req, res) => {
     const { id } = req.params;
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
+    const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    campground.images.push(...images);
+    await campground.save();
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename);
+        }
+        await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } })
+    }
     req.flash('success', 'Successfully updated this campground!');
     res.redirect(`${campground._id}`);
 }
