@@ -1,7 +1,9 @@
 const Campground = require('../models/campground');
 const { cloudinary } = require("../cloudinary");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
 
-const imgUrl = 'https://source.unsplash.com/random/?camping';
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const provinces = ['AB', 'BC', 'SK', 'MB', 'ON', 'QC', 'NS', 'NB', "PE", 'NL', 'YT', 'NT', 'NU']
 const amenitiesObj = {
     NH: 'No RV Hookups',
@@ -28,7 +30,7 @@ const amenitiesObj = {
 
 module.exports.index = async (req, res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds, imgUrl });
+    res.render('campgrounds/index', { campgrounds });
 }
 
 module.exports.renderNewCampground = async (req, res) => {
@@ -37,8 +39,13 @@ module.exports.renderNewCampground = async (req, res) => {
 }
 
 module.exports.createNewCampground = async (req, res) => {
+    const geoData = await geocoder.forwardGeocode({
+        query: `${req.body.campground.name}, ${req.body.campground.province}`,
+        limit: 1
+    }).send()
     req.body.campground.amen = amenToString(req.body.campground.amen);
     const newCampground = new Campground(req.body.campground);
+    newCampground.geometry = geoData.body.features[0].geometry;
     newCampground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     newCampground.author = req.user._id;
     await newCampground.save();
@@ -58,7 +65,7 @@ module.exports.renderSingleCampground = async (req, res) => {
     }
     const amenList = (campground.amen) ? parseAmenities(campground.amen) : [];
     const currentUser = req.user;
-    res.render('campgrounds/single', { campground, amenList, imgUrl, currentUser });
+    res.render('campgrounds/single', { campground, amenList, currentUser });
 }
 
 module.exports.renderEditCampground = async (req, res) => {
