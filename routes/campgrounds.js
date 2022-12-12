@@ -15,6 +15,8 @@ router.route('/')
     .get(asyncWrapper(campgroundsController.index))
     .post(isLoggedIn, upload.array('image'), validateCampground, asyncWrapper(campgroundsController.createNewCampground));
 
+// Router for long list of all campgrounds
+router.get('/all', asyncWrapper(campgroundsController.renderAllCampgrounds));
 
 // Get page for creating new campground
 router.get('/new', isLoggedIn, asyncWrapper(campgroundsController.renderNewCampground));

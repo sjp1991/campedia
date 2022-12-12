@@ -83,7 +83,8 @@ app.use('/', userRoutes);
 //---------------------------------------------------------------------------------------
 
 app.get('/', (req, res) => {
-    res.redirect('/campgrounds');
+    const currentUser = req.user;
+    res.render('home', { currentUser });
 })
 
 // Easter egg

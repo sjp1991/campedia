@@ -30,12 +30,17 @@ const amenitiesObj = {
 
 module.exports.index = async (req, res) => {
     const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
+    res.render('campgrounds/index', { provinces, campgrounds });
 }
 
 module.exports.renderNewCampground = async (req, res) => {
     const amenitiesMap = Object.entries(amenitiesObj);
     res.render('campgrounds/new', { provinces, amenitiesMap });
+}
+
+module.exports.renderAllCampgrounds = async (req, res) => {
+    const campgrounds = await Campground.find({});
+    res.render('campgrounds/all', { campgrounds });
 }
 
 module.exports.createNewCampground = async (req, res) => {

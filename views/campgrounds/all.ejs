@@ -1,0 +1,23 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/stylesheets/app.css">
+<% for (let campground of campgrounds) { %>
+<div class="card mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <% if(campground.images.length) { %>
+            <img src="<%= campground.images[0].url %>" class="card-img-top img-fluid" alt="">
+            <% } else { %>
+            <img src="https://res.cloudinary.com/dzf2ezxvo/image/upload/v1658717190/Campedia/lutxgnowbtrfjedp3avv.jpg" class="card-img-top img-fluid" alt="">
+            <% } %>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <a href="/campgrounds/<%= campground._id %>">
+                    <h5 class="card-text"><%= campground.name %></h5>
+                </a>
+                <div class="card-text"><small class="text-muted"><%= campground.province %></small></div>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
