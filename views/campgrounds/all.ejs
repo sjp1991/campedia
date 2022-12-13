@@ -1,6 +1,6 @@
 <% layout('layouts/boilerplate') %>
 <link rel="stylesheet" href="/stylesheets/app.css">
-<% for (let campground of campgrounds) { %>
+<% for (let campground of paginatedResults.results) { %>
 <div class="card mb-3">
     <div class="row">
         <div class="col-md-4">
@@ -21,3 +21,27 @@
     </div>
 </div>
 <% } %>
+
+<div class="container d-flex justify-content-center align-items-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <% if (paginatedResults.previous) { %>
+            <li class="page-item">
+                <a class="page-link" href="/campgrounds/all?page=<%=paginatedResults.previous.page%>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <% } %>
+            <% for (let i = 1; i <= paginatedResults.total + 1; i++) { %>
+            <li class="page-item <%= i === paginatedResults.currPage ? 'active' : '' %>"><a class="page-link" href="/campgrounds/all?page=<%=i%>"><%=i%></a></li>
+            <% } %>
+            <% if (paginatedResults.next) { %>
+            <li class="page-item">
+                <a class="page-link" href="/campgrounds/all?page=<%=paginatedResults.next.page%>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>

@@ -1,51 +1,63 @@
 <% layout('layouts/boilerplate') %>
-<h1 class="text-center">Edit a Campground</h1>
-<form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" class="validated-form" enctype="multipart/form-data" novalidate>
-    <div class="mb-3">
-        <label class="form-label" for="name">Name</label>
-        <input class="form-control" type="text" id="name" name="campground[name]" value="<%= campground.name %>" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="province">Province</label>
-        <select class="form-select" id="province" name="campground[province]" required>
-            <% for(let province of provinces){ %>
-            <option value="<%=province%>" <%= province === campground.province ? 'selected' : '' %>><%=province%></option>
-            <% } %>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="sites">Number of Sites</label>
-        <input class="form-control" type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="phone">Phone Number</label>
-        <input class="form-control" type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="amen">Amenities</label>
-        <select class="form-select" id="amen" name="campground[amen]" multiple>
-            <% for(let amen of amenitiesMap){ %>
-            <option value="<%=amen[0]%>" <%= amenList.includes(amen[0]) ? 'selected' : '' %>><%=amen[1]%></option>
-            <% } %>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="desc">Description</label>
-        <input class="form-control" type="text" id="desc" name="campground[desc]" value="<%= campground.desc %>">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="img">Add New Images</label>
-        <input class="form-control" type="file" id="img" name="image" value="" multiple>
-    </div>
-    <div class="mb-3">
-        <% campground.images.forEach(function(img, i) { %>
-        <img src="<%=img.thumbnail%>" class="img-thumbnail" alt="">
-        <div class="form-check-inline">
-            <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3">
+            <div class="card shadow">
+                <img src="https://res.cloudinary.com/dzf2ezxvo/image/upload/v1659392542/Campedia/gqygxbx0pnoh7noskkhq.jpg" alt="" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">Edit a Campground</h5>
+                    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" class="validated-form" enctype="multipart/form-data" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Name</label>
+                            <input class="form-control" type="text" id="name" name="campground[name]" value="<%= campground.name %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="province">Province</label>
+                            <select class="form-select" id="province" name="campground[province]" required>
+                                <% for(let province of provinces){ %>
+                                <option value="<%=province%>" <%= province === campground.province ? 'selected' : '' %>><%=province%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="sites">Number of Sites</label>
+                            <input class="form-control" type="number" id="sites" name="campground[sites]" value="<%= campground.sites %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input class="form-control" type="text" id="phone" name="campground[phone]" value="<%= campground.phone %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="amen">Amenities</label>
+                            <select class="form-select" id="amen" name="campground[amen]" multiple>
+                                <% for(let amen of amenitiesMap){ %>
+                                <option value="<%=amen[0]%>" <%= amenList.includes(amen[0]) ? 'selected' : '' %>><%=amen[1]%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="desc">Description</label>
+                            <input class="form-control" type="text" id="desc" name="campground[desc]" value="<%= campground.desc %>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="img">Add New Images</label>
+                            <input class="form-control" type="file" id="img" name="image" value="" multiple>
+                        </div>
+                        <div class="mb-3">
+                            <% campground.images.forEach(function(img, i) { %>
+                            <img src="<%=img.thumbnail%>" class="img-thumbnail" alt="">
+                            <div class="form-check-inline">
+                                <input type="checkbox" id="image-<%=i%>" name="deleteImages[]" value="<%=img.filename%>">
+                            </div>
+                            <label class="form-label" for="image-<%=i%>">Delete</label>
+                            <% }) %>
+                        </div>
+                        <button class="btn btn-primary">Submit</button>
+                        <a class="btn btn-danger" href="/campgrounds/<%= campground._id %>">Cancel</a>
+                    </form>
+                </div>
+            </div>
         </div>
-        <label class="form-label" for="image-<%=i%>">Delete</label>
-        <% }) %>
     </div>
-    <button class="btn btn-primary">Submit</button>
-    <a class="btn btn-danger" href="/campgrounds/<%= campground._id %>">Cancel</a>
-</form>
+</div>

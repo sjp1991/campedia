@@ -39,8 +39,8 @@ module.exports.renderNewCampground = async (req, res) => {
 }
 
 module.exports.renderAllCampgrounds = async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/all', { campgrounds });
+    const paginatedResults = res.paginatedResults;
+    res.render('campgrounds/all', { paginatedResults });
 }
 
 module.exports.createNewCampground = async (req, res) => {

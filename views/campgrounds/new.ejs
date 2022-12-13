@@ -1,45 +1,57 @@
 <% layout('layouts/boilerplate') %>
-<h1 class="text-center">Add a new Campground</h1>
-<form action="/campgrounds" method="POST" class="validated-form" enctype="multipart/form-data" novalidate>
-    <div class="mb-3">
-        <label class="form-label" for="name">Name</label>
-        <input class="form-control" type="text" id="name" name="campground[name]" required>
+
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3">
+            <div class="card shadow">
+                <img src="https://res.cloudinary.com/dzf2ezxvo/image/upload/v1659392542/Campedia/gqygxbx0pnoh7noskkhq.jpg" alt="" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">Add a new Campground</h5>
+                    <form action="/campgrounds" method="POST" class="validated-form" enctype="multipart/form-data" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Name</label>
+                            <input class="form-control" type="text" id="name" name="campground[name]" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="province">Province</label>
+                            <select class="form-select" id="province" name="campground[province]" required>
+                                <option value="">-- Choose a province --</option>
+                                <% for(let province of provinces){ %>
+                                <option value="<%=province%>"><%=province%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="sites">Number of Sites</label>
+                            <input class="form-control" type="number" id="sites" name="campground[sites]">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="phone">Phone Number</label>
+                            <input class="form-control" type="text" id="phone" name="campground[phone]">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="amen">Amenities</label>
+                            <select class="form-select" id="amen" name="campground[amen]" multiple>
+                                <% for(let amen of amenitiesMap){ %>
+                                <option value="<%=amen[0]%>"><%=amen[1]%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="desc">Description</label>
+                            <input class="form-control" type="text" id="desc" name="campground[desc]" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="img">Images</label>
+                            <input class="form-control" type="file" id="img" name="image" value="" multiple>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary">Submit</button>
+                            <a class="btn btn-danger" href="/campgrounds">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label" for="province">Province</label>
-        <select class="form-select" id="province" name="campground[province]" required>
-            <option value="">-- Choose a province --</option>
-            <% for(let province of provinces){ %>
-            <option value="<%=province%>"><%=province%></option>
-            <% } %>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="sites">Number of Sites</label>
-        <input class="form-control" type="number" id="sites" name="campground[sites]">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="phone">Phone Number</label>
-        <input class="form-control" type="text" id="phone" name="campground[phone]">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="amen">Amenities</label>
-        <select class="form-select" id="amen" name="campground[amen]" multiple>
-            <% for(let amen of amenitiesMap){ %>
-            <option value="<%=amen[0]%>"><%=amen[1]%></option>
-            <% } %>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="desc">Description</label>
-        <input class="form-control" type="text" id="desc" name="campground[desc]" value="">
-    </div>
-    <div class="mb-3">
-        <label class="form-label" for="img">Images</label>
-        <input class="form-control" type="file" id="img" name="image" value="" multiple>
-    </div>
-    <div class="mb-3">
-        <button class="btn btn-primary">Submit</button>
-        <a class="btn btn-danger" href="/campgrounds">Cancel</a>
-    </div>
-</form>
+</div>
