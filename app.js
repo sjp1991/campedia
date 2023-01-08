@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
+// npm packages
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -12,6 +13,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 // DB Model
 const User = require('./models/user');
@@ -47,13 +50,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(mongoSanitize());
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false, crossOriginResourcePolicy: false, crossOriginOpenerPolicy: false }));
 
 const sessionConfig = {
+    name: 'session',
     secret: 'sesame',
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
+        //secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // a week
         maxAge: 1000 * 60 * 60 * 24 * 7, // a week
     }

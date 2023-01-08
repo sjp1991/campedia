@@ -17,7 +17,7 @@ mongoose.connect('mongodb://localhost:27017/campedia', {
 const seedDB = async () => {
     await Campground.deleteMany({});
     for (let campground of jsonData) {
-        if (Math.random() > 0.95) { // to reduce number of seed data
+        if (Math.random() > 0.80) { // to reduce number of seed data
             const camp = new Campground({
                 code: campground.code,
                 name: campground.name,

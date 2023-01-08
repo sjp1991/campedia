@@ -1,4 +1,5 @@
-const joi = require('joi');
+const htmlInput = require('joi-html-input');
+const joi = require('joi').extend(htmlInput);
 
 module.exports.campgroundJoiSchema = joi.object({
     campground: joi.object({

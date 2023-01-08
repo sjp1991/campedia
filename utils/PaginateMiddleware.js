@@ -3,7 +3,7 @@ const Campground = require('../models/campground');
 module.exports.paginateResults = async (req, res, next) => {
     const campgrounds = await Campground.find({});
     const page = req.query.page ? parseInt(req.query.page) : 1;
-    const limit = req.query.limit ? parseInt(req.query.limit) : 20;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 50;
     const total = campgrounds.length / limit;
 
     // calculating the starting and ending index
